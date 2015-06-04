@@ -1,7 +1,7 @@
 #!/bin/bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # Indicate the path of the java compiler to use
-export JAVA_HOME=/usr/csshare/pkgs/jdk1.7.0_17
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home
 export PATH=$JAVA_HOME/bin:$PATH
 
 # compile the java program

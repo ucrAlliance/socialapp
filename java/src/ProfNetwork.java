@@ -270,14 +270,15 @@ public class ProfNetwork {
               while(usermenu) {
                 System.out.println("MAIN MENU");
                 System.out.println("---------");
-                System.out.println("1. Goto Friend List");
-                System.out.println("2. Update Profile");
-                System.out.println("3. Write a new message");//DONE
-                System.out.println("4. Send Friend Request");
-                System.out.println("5. View/Delete messages");//DONE
-                System.out.println("6. Change password");//DONE
-                System.out.println("7. Search people");//DONE
+                System.out.println("1. Goto Friend List");//FIXME Not done
+                System.out.println("2. Update Profile");//FIXME Not done(might use indexes)
+                System.out.println("3. Write a new message");//FIXME DONE
+                System.out.println("4. Send Friend Request");//FIXME Not done
+                System.out.println("5. View/Delete messages");//FIXME DONE
+                System.out.println("6. Change password");//FIXME DONE
+                System.out.println("7. Search people");//FIXXME DONE(might need to limit what the user is able to see based on if friend or not, currently does not do this)
                 System.out.println("8. Log out");
+                //FIXME Also we need to make our own print function their executeAndPrintResult() function has terrible output layout
                 switch (readChoice()){
                    case 1: FriendList(esql, authorisedUser); break;
                    //case 2: UpdateProfile(esql, authorisedUser); break;
@@ -396,10 +397,10 @@ public static void FriendList(ProfNetwork esql, String current_usr){
 		while(optionsMenu) {
 			System.out.println("OPTIONS MENU");
             System.out.println("---------");
-            System.out.println("1. Send Message to friend");
-            System.out.println("2. Send Request");
-            System.out.println("3. View Profile");
-            System.out.println("4. View a friends 'friend' list");
+            System.out.println("1. Send Message");//FIXME DONE
+            System.out.println("2. Send Request");//FIXME Not done
+            System.out.println("3. View Profile");//FIXME DONE(shitty user interface)
+            System.out.println("4. View a friends 'friend' list");//FIXME DONE(but does not check if they are within 3 lvls of connection it needs to do this. so this can only be called up to three times.
             System.out.println("5. Go back to Main Menu");
             switch (readChoice()){
                 case 1: 
@@ -420,9 +421,7 @@ public static void FriendList(ProfNetwork esql, String current_usr){
                 	break;
                 //case 2: sendRequest(esql, current_usr); break;
                 case 3: Search(esql); break;
-                case 4: 
-                	
-                	FriendList(esql, current_usr); break;
+                case 4: FriendList(esql, current_usr); break;
                 case 5: optionsMenu = false; break;
                 default : System.out.println("Unrecognized choice!"); break;
             }
@@ -475,30 +474,77 @@ public static void sendMessage(ProfNetwork esql, String current_usr){
 
 public static void ViewMessages(ProfNetwork esql, String current_usr){
 	try{
-		String query = String.format("SELECT M.msgId, M.contents FROM MESSAGE M, USR U WHERE M.receiverId = '%s'", current_usr);
-		esql.executeQueryAndPrintResult(query);
-		System.out.println("Messages Found!");
+		String drop1 = String.format("DROP TABLE IF EXISTS MESSAGES_RECEIVED");
+		esql.executeUpdate(drop1);
+		String drop2 = String.format("DROP TABLE IF EXISTS MESSAGES_SENT");
+		esql.executeUpdate(drop2);
+		String query = String.format("CREATE TABLE MESSAGES_RECEIVED AS SELECT msgId, contents, deleteStatus FROM MESSAGE WHERE receiverId = '%s' AND deleteStatus != 2", current_usr);
+		esql.executeUpdate(query);
+		String query2 = String.format("SELECT msgId, contents, deleteStatus FROM MESSAGE WHERE receiverId = '%s' AND deleteStatus !=2", current_usr);
+		esql.executeQueryAndPrintResult(query2);
+		System.out.println("Messages Received found!");
+		String query3 = String.format("CREATE TABLE MESSAGES_SENT AS SELECT msgId, contents, deleteStatus FROM MESSAGE WHERE senderId = '%s' AND deleteStatus !=1", current_usr);
+		esql.executeUpdate(query3);
+		String query4 = String.format("SELECT msgId, contents, deleteStatus FROM MESSAGE WHERE senderId = '%s' AND deleteStatus != 1", current_usr);
+		esql.executeQueryAndPrintResult(query4);
+		System.out.println("Messages Sent found!");
 		}catch(Exception e){
 			System.err.println(e.getMessage());
 		}
 	try{
-		System.out.print("\tEnter a messageId to delete or hit enter to do nothing: ");
-		String delete_message = in.readLine();
-		if(delete_message != "")
-		{
-			String query = String.format("UPDATE MESSAGE SET deleteStatus = deleteStatus + 1 WHERE receiverId = '%s'", current_usr);
-			esql.executeUpdate(query);
-			System.out.println("Message deleted!");
-		}
+		String delete_message = "";
+		int num = 0;
+		do{
+			System.out.print("\tWould you like to delete any messages? y/n: ");
+			delete_message = in.readLine();
+			if(delete_message.equals("y"))
+			{
+				System.out.print("\tEnter messageId of message you would like to delete: ");
+				String message_id = in.readLine();
+				String query = String.format("Select msgId FROM MESSAGES_RECEIVED WHERE msgId = '%s'", message_id);
+				num = esql.executeQuery(query);
+				if(num > 0)
+				{
+					System.out.println("message id found in MESSAGES_RECEIVED");
+					String query2 = String.format("UPDATE MESSAGE SET deleteStatus = 2 WHERE receiverId = '%s'", current_usr);
+					esql.executeUpdate(query2);
+					System.out.println("Message removed from inbox!");
+				}
+				String query3 = String.format("Select msgId FROM MESSAGES_SENT WHERE msgId = '%s'", message_id);
+				num = esql.executeQuery(query3);
+				if(num > 0)
+				{
+					System.out.println("message id found in MESSAGES_SENT");
+					String query4 = String.format("UPDATE MESSAGE SET deleteStatus = 1 WHERE senderId = '%s'", current_usr);
+					esql.executeUpdate(query4);
+					System.out.println("Message removed from outbox!");
+				}
+			}
+			else if(delete_message.equals("n"))
+			{
+				System.out.println("No messages deleted from inbox/outbox");
+			}
+			else
+			{
+				System.out.println("Incorrect input!");
+			}
+		}while(!delete_message.equals("y") && !delete_message.equals("n"));
 		}catch(Exception e){
 			System.err.println(e.getMessage());
 		}
-	/**try{
+		//FIXME NEED THINK OF A WAY TO FIND OUT WHEN WE ARE ABLE TO SET THE DELETESTATUS EQUAL TO 3 SO IT CAN BE REMOVED FROM DATABASE
+	try{
+		String query
 		String query = String.format("DELETE FROM MESSAGE WHERE deleteStatus = 3");
-		esql.executeQuery(query);
+		int num = esql.executeQuery(query);
+		if(num > 0)
+		{
+			System.out.print(num);
+			System.out.print(" Messages were deleted from the datatable.");
+		}
 		}catch(Exception e){
-			System.out.println("Message remains in database because sender still holds onto it");
-		}**/
+			System.out.println("Message remains in database because sender/receiver still holds onto it");
+		}
 }//end
 
 

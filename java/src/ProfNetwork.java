@@ -9,9 +9,8 @@
 		Name: Ikk Anmol Singh Hundal
 		SID: 861134450
 
-		//FIXME
 		Name: Austin Macciola
-		SID:
+		SID: 860967151
 
 		We certify that this project is our own work, and except for the template
 		no help was received from anyone.
@@ -33,6 +32,7 @@ import java.util.ArrayList;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.TreeSet;
 
 /**
  * This class defines a simple embedded SQL utility class that is designed to
@@ -59,17 +59,22 @@ public class ProfNetwork {
     * @throws java.sql.SQLException when failed to make a connection.
     */
    public ProfNetwork (String dbname, String dbport, String user, String passwd) throws SQLException {
-
-      //System.out.print("Connecting to database...");
+	
+		/* Debugging
+      	System.out.print("Connecting to database..."); */
       try{
+	
          // constructs the connection URL
          String url = "jdbc:postgresql://localhost:" + dbport + "/" + dbname;
-         //System.out.println ("Connection URL: " + url + "\n");
-
+			
+			/* Debugging
+         	System.out.println ("Connection URL: " + url + "\n");
+			*/
+			
          // obtain a physical connection
          this._connection = DriverManager.getConnection(url, user, passwd);
          //System.out.println("Done");
-      }catch (Exception e){
+      } catch (Exception e){
          System.err.println("Error - Unable to Connect to Database: " + e.getMessage() );
          System.out.println("Make sure you started postgres on this machine");
          System.exit(-1);
@@ -277,7 +282,7 @@ public class ProfNetwork {
               while(usermenu) {
                 System.out.println("DASHBOARD");
                 System.out.println("---------");
-                System.out.println("1. Goto Friend List");//FIXME Not done
+                System.out.println("1. View Friend List");//FIXME Not done
                 System.out.println("2. Update Profile");//FIXME Not done(might use indexes)
                 System.out.println("3. Write a new message");//FIXME DONE
                 System.out.println("4. Send Friend Request");//FIXME Not done
@@ -319,7 +324,7 @@ public class ProfNetwork {
 
    public static void Greeting(){
       System.out.println(
-         "\n\n*******************************************************\n" +
+         "\n*******************************************************\n" +
          "              Welcome to RLinkedin      	               \n" +
          "*******************************************************\n");
    }//end Greeting
@@ -406,23 +411,41 @@ public class ProfNetwork {
          System.err.println (e.getMessage ());
          return null;
       }
-   }//end
+   }
 
-// Rest of the functions definition go in here
+	public static void PrintFriendList(ProfNetwork esql, String user_name){
+		try{
+			String query = String.format("SELECT connectionId FROM CONNECTION_USR WHERE (userId = '%s') AND status = 'Accept' UNION SELECT userId FROM CONNECTION_USR WHERE (connectionId = '%s') AND status = 'Accept'", user_name, user_name);
+			List<List<String>> result= esql.executeQueryAndReturnResult(query);
+         System.out.println("\tFRIENDS LIST");
+         System.out.println("\t------------");
+				
+			// Print
+			for(List<String> list : result){
+				for(String attr : list){
+					System.out.println("\t"+ attr);	
+				}
+			}
 
-public static void FriendList(ProfNetwork esql, String current_usr){
-	try{
-		String query4 = String.format("DROP TABLE IF EXISTS FRIENDS");
-		esql.executeUpdate(query4);
-		String query = String.format("CREATE TEMP TABLE FRIENDS AS SELECT connectionId FROM CONNECTION_USR WHERE (userId = '%s') AND status = 'Accept' UNION SELECT userId FROM CONNECTION_USR WHERE (connectionId = '%s') AND status = 'Accept'", current_usr, current_usr);
-		esql.executeUpdate(query);
-		String query2 = String.format("SELECT connectionId FROM CONNECTION_USR WHERE (userId = '%s') AND status = 'Accept' UNION SELECT userId FROM CONNECTION_USR WHERE (connectionId = '%s') AND status = 'Accept'", current_usr, current_usr);
-		esql.executeQueryAndPrintResult(query2);
-		System.out.println("Friends table created!");
+			System.out.println("\t------------");
+			System.out.print("\n");
+			
+		}catch(Exception e){
+         System.err.println (e.getMessage ());
+      }
+   }
+
+	// Rest of the functions definition go in here
+	public static void FriendList(ProfNetwork esql, String current_usr){
+		try {
+			PrintFriendList(esql, current_usr);
+			// String query2 = String.format("SELECT connectionId FROM CONNECTION_USR WHERE (userId = '%s') AND status = 'Accept' UNION SELECT userId FROM CONNECTION_USR WHERE (connectionId = '%s') AND status = 'Accept'", current_usr, current_usr);
+			// esql.executeQueryAndPrintResult(query2);
+			// System.out.println("Friends table created!");
 		
-		boolean optionsMenu = true;
-		while(optionsMenu) {
-			System.out.println("OPTIONS MENU");
+			boolean optionsMenu = true;
+			while(optionsMenu) {
+				System.out.println("OPTIONS MENU");
             System.out.println("---------");
             System.out.println("1. Send Message");//FIXME DONE
             System.out.println("2. Send Request");//FIXME Not done
@@ -430,8 +453,8 @@ public static void FriendList(ProfNetwork esql, String current_usr){
             System.out.println("4. View a friends 'friend' list");//FIXME DONE(but does not check if they are within 3 lvls of connection it needs to do this. so this can only be called up to three times.
             System.out.println("5. Go back to Main Menu");
             switch (readChoice()){
-                case 1: 
-                	int num = 0;
+            	case 1: 
+               	int num = 0;
                 	String friend_id = "";
                 	do{
                 		try{
@@ -443,20 +466,20 @@ public static void FriendList(ProfNetwork esql, String current_usr){
                 			}catch(Exception e){
                 				System.err.println(e.getMessage());
                 			}
-                	}while(num <= 0);
+               	}while(num <= 0);
                 	sendMessage(esql, current_usr); 
                 	break;
-                //case 2: sendRequest(esql, current_usr); break;
-                case 3: Search(esql); break;
-                case 4: FriendList(esql, current_usr); break;
-                case 5: optionsMenu = false; break;
-                default : System.out.println("Unrecognized choice!"); break;
-            }
-        }
-		}catch(Exception e){
+               //case 2: sendRequest(esql, current_usr); break;
+               case 3: Search(esql); break;
+               case 4: FriendList(esql, current_usr); break;
+               case 5: optionsMenu = false; break;
+               default : System.out.println("Unrecognized choice!"); break;
+           	}
+      	}
+		} catch(Exception e){
 			System.err.println(e.getMessage());
 		}
-}//end
+	}//end
 
 
 /**public static void SendRequest(ProfNetwork esql, String current_usr){

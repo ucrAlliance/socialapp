@@ -1,3 +1,4 @@
 *.zip
 *.DS_Store
 sql/scripts/data/
+sql/scripts/logfile

@@ -1,15 +1,15 @@
 #!/bin/bash
-rm -rf ~/Desktop/socialapp/CS166_Project/sql/scripts/data
-mkdir  ~/Desktop/socialapp/CS166_Project/sql/scripts/data
-echo " export PGDATA=~/Desktop/socialapp/CS166_Project/sql/scripts/data " >> ~/.bash_profile
-source ~/.bash_profile
+rm -rf data
+mkdir  data
+echo "export PGDATA=$PWD/data" >> ~/.bashrc
+source ~/.bashrc
 initdb
-echo " export PGPORT=4213" >> ~/.bash_profile
-source ~/.bash_profile
+echo "export PGPORT=4213" >> ~/.bashrc
+source ~/.bashrc
 pg_ctl -o "-p $PGPORT" -D $PGDATA -l logfile start
 pg_ctl status
-echo " export DB_NAME=amaccDB" >> ~/.bash_profile
-source ~/.bash_profile
+echo "export DB_NAME=amaccDB" >> ~/.bashrc
+source ~/.bashrc
 pg_ctl status
 echo PGPORT: $PGPORT
 echo PGDATA: $PGDATA

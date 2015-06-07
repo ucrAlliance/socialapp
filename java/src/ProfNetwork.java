@@ -283,15 +283,14 @@ public class ProfNetwork {
                 System.out.println("\nDASHBOARD");
                 System.out.println("---------");
                 System.out.println("1. View Friend List");
-                System.out.println("2. Update Profile");
+                System.out.println("2. Update Profile");//FIXME
                 System.out.println("3. Write a new message");
-                System.out.println("4. Send Friend Request");//FIXME Not done
-                System.out.println("5. View/Delete messages");//FIXME DONE
-                System.out.println("6. Change password");//FIXME DONE
+                System.out.println("4. Send Friend Request");//FIXME
+                System.out.println("5. View/Delete messages");
+                System.out.println("6. Change password");
                 System.out.println("7. Search people");//FIXME DONE(might need to limit what the user is able to see based on if friend or not, currently does not do this)
                 System.out.println("8. Log out");
 
-                //FIXME Also we need to make our own print function their executeAndPrintResult() function has terrible output layout
                 switch (readChoice()){
                    case 1: FriendList(esql, authorisedUser); break;
                    case 2: UpdateProfile(esql, authorisedUser); break;

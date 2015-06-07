@@ -265,7 +265,7 @@ public class ProfNetwork {
          boolean keepon = true;
          while(keepon) {
             // These are sample SQL statements
-            System.out.println("MAIN MENU");
+            System.out.println("\nMAIN MENU");
             System.out.println("---------");
             System.out.println("1. Create user");
             System.out.println("2. Log in");
@@ -324,7 +324,7 @@ public class ProfNetwork {
 
    public static void Greeting(){
       System.out.println(
-         "\n*******************************************************\n" +
+         "\n\n*******************************************************\n" +
          "              Welcome to RLinkedin      	               \n" +
          "*******************************************************\n");
    }//end Greeting
@@ -558,20 +558,36 @@ public static void sendMessage(ProfNetwork esql, String current_usr){
 
 public static void ViewMessages(ProfNetwork esql, String current_usr){
 	try{
-		String drop1 = String.format("DROP TABLE IF EXISTS MESSAGES_RECEIVED");
-		esql.executeUpdate(drop1);
-		String drop2 = String.format("DROP TABLE IF EXISTS MESSAGES_SENT");
-		esql.executeUpdate(drop2);
-		String query = String.format("CREATE TABLE MESSAGES_RECEIVED AS SELECT msgId, contents, deleteStatus FROM MESSAGE WHERE receiverId = '%s' AND deleteStatus != 2", current_usr);
-		esql.executeUpdate(query);
-		String query2 = String.format("SELECT msgId, contents, deleteStatus FROM MESSAGE WHERE receiverId = '%s' AND deleteStatus !=2", current_usr);
-		esql.executeQueryAndPrintResult(query2);
-		System.out.println("Messages Received found!");
-		String query3 = String.format("CREATE TABLE MESSAGES_SENT AS SELECT msgId, contents, deleteStatus FROM MESSAGE WHERE senderId = '%s' AND deleteStatus !=1", current_usr);
-		esql.executeUpdate(query3);
-		String query4 = String.format("SELECT msgId, contents, deleteStatus FROM MESSAGE WHERE senderId = '%s' AND deleteStatus != 1", current_usr);
-		esql.executeQueryAndPrintResult(query4);
-		System.out.println("Messages Sent found!");
+		// Recieved Messages
+		System.out.println("RECEIVED MESSAGES");
+		System.out.println("-----------------\n");
+		String queryr = String.format("SELECT msgId, contents, deleteStatus, sendtime FROM MESSAGE WHERE receiverId = '%s' AND deleteStatus !=2", current_usr);
+		List<List<String>> received= esql.executeQueryAndReturnResult(queryr);
+
+		// Print Here
+		for(List<String> list : received){
+			System.out.println("\tmsgid: " + list.get(0));
+			System.out.println("\tcontents: " + list.get(1).trim());
+			System.out.println("\tdeleteStatus: " + list.get(2));
+			System.out.println("\ttime: " + list.get(3));
+			System.out.println("\n");
+		}
+
+		// Sent Messages
+		System.out.println("SENT MESSAGES");
+		System.out.println("-------------");
+		String querys = String.format("SELECT msgId, contents, deleteStatus, sendtime FROM MESSAGE WHERE senderId = '%s' AND deleteStatus != 1", current_usr);
+		List<List<String>> sent= esql.executeQueryAndReturnResult(querys);
+
+		// Print Here
+		for(List<String> list : sent){
+			System.out.println("\tmsgid: " + list.get(0));
+			System.out.println("\tcontents: " + list.get(1).trim());
+			System.out.println("\tdeleteStatus: " + list.get(2));
+			System.out.println("\ttime: " + list.get(3));
+			System.out.println("\n");
+		}
+
 		}catch(Exception e){
 			System.err.println(e.getMessage());
 		}

@@ -1,4 +1,5 @@
 *.zip
 *.DS_Store
-sql/scripts/data/
-sql/scripts/logfile
+*.swp
+logfile
+temp

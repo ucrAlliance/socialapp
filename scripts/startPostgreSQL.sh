@@ -1,7 +1,7 @@
 #!/bin/bash
-rm -rf data
-mkdir  data
-echo "export PGDATA=$PWD/data" >> ~/.bashrc
+rm -rf ../temp
+mkdir  ../temp
+echo "export PGDATA=$PWD/../temp" >> ~/.bashrc
 source ~/.bashrc
 initdb
 echo "export PGPORT=4213" >> ~/.bashrc

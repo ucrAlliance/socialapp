@@ -60,15 +60,15 @@ public class ProfNetwork {
     */
    public ProfNetwork (String dbname, String dbport, String user, String passwd) throws SQLException {
 
-      System.out.print("Connecting to database...");
+      //System.out.print("Connecting to database...");
       try{
          // constructs the connection URL
          String url = "jdbc:postgresql://localhost:" + dbport + "/" + dbname;
-         System.out.println ("Connection URL: " + url + "\n");
+         //System.out.println ("Connection URL: " + url + "\n");
 
          // obtain a physical connection
          this._connection = DriverManager.getConnection(url, user, passwd);
-         System.out.println("Done");
+         //System.out.println("Done");
       }catch (Exception e){
          System.err.println("Error - Unable to Connect to Database: " + e.getMessage() );
          System.out.println("Make sure you started postgres on this machine");
@@ -275,7 +275,7 @@ public class ProfNetwork {
             if (authorisedUser != null) {
               boolean usermenu = true;
               while(usermenu) {
-                System.out.println("MAIN MENU");
+                System.out.println("DASHBOARD");
                 System.out.println("---------");
                 System.out.println("1. Goto Friend List");//FIXME Not done
                 System.out.println("2. Update Profile");//FIXME Not done(might use indexes)
@@ -320,7 +320,7 @@ public class ProfNetwork {
    public static void Greeting(){
       System.out.println(
          "\n\n*******************************************************\n" +
-         "              User Interface      	               \n" +
+         "              Welcome to RLinkedin      	               \n" +
          "*******************************************************\n");
    }//end Greeting
 
@@ -350,6 +350,8 @@ public class ProfNetwork {
     **/
    public static void CreateUser(ProfNetwork esql){
       try{
+			System.out.println("\tCREATE USER MENU");
+         System.out.println("\t------------------");
 			System.out.print("\tPlease provide the following information\n");
          System.out.print("\tlogin: ");
          String login = in.readLine();
@@ -387,16 +389,18 @@ public class ProfNetwork {
     **/
    public static String LogIn(ProfNetwork esql){
       try{
-         System.out.print("\tEnter user login: ");
+      	System.out.println("\tLOGIN MENU");
+         System.out.println("\t----------");
+         System.out.print("\tlogin: ");
          String login = in.readLine();
-         System.out.print("\tEnter user password: ");
+         System.out.print("\tpassword: ");
          String password = in.readLine();
 
          String query = String.format("SELECT * FROM USR WHERE userId = '%s' AND password = '%s'", login, password);
          int userNum = esql.executeQuery(query);
 	 		if (userNum > 0)
 				return login;
-         System.out.println("\nInvalid login and/or password. Please Try Again\n");
+         System.out.println("\tERROR:Invalid login and/or password. Please Try Again");
 			return null;
       }catch(Exception e){
          System.err.println (e.getMessage ());

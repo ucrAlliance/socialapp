@@ -280,11 +280,11 @@ public class ProfNetwork {
             if (authorisedUser != null) {
               boolean usermenu = true;
               while(usermenu) {
-                System.out.println("DASHBOARD");
+                System.out.println("\nDASHBOARD");
                 System.out.println("---------");
                 System.out.println("1. View Friend List");
                 System.out.println("2. Update Profile");
-                System.out.println("3. Write a new message");//FIXME DONE
+                System.out.println("3. Write a new message");
                 System.out.println("4. Send Friend Request");//FIXME Not done
                 System.out.println("5. View/Delete messages");//FIXME DONE
                 System.out.println("6. Change password");//FIXME DONE
@@ -355,7 +355,7 @@ public class ProfNetwork {
     **/
    public static void CreateUser(ProfNetwork esql){
       try{
-			System.out.println("\tCREATE USER MENU");
+			System.out.println("\n\tCREATE USER MENU");
          System.out.println("\t------------------");
 			System.out.print("\tPlease provide the following information\n");
          System.out.print("\tlogin: ");
@@ -390,7 +390,7 @@ public class ProfNetwork {
 
 	public static void UpdateProfile(ProfNetwork esql, String current_user){
       try{
-			System.out.println("\tUPDATE PROFILE");
+			System.out.println("\n\tUPDATE PROFILE");
          System.out.println("\t------------------");
 			System.out.print("\tPlease provide the new information\n");
          System.out.print("\tlogin: ");
@@ -429,7 +429,7 @@ public class ProfNetwork {
     **/
    public static String LogIn(ProfNetwork esql){
       try{
-      	System.out.println("\tLOGIN MENU");
+      	System.out.println("\n\tLOGIN MENU");
          System.out.println("\t----------");
          System.out.print("\tlogin: ");
          String login = in.readLine();
@@ -463,7 +463,6 @@ public class ProfNetwork {
 			}
 
 			System.out.println("\t------------");
-			System.out.print("\n");
 			
 		}catch(Exception e){
          System.err.println (e.getMessage ());
@@ -477,7 +476,7 @@ public class ProfNetwork {
 		
 			boolean optionsMenu = true;
 			while(optionsMenu) {
-				System.out.println("OPTIONS MENU");
+				System.out.println("\nOPTIONS MENU");
             System.out.println("---------");
             System.out.println("1. Send Message");//FIXME DONE
             System.out.println("2. Send Request");//FIXME Not done
@@ -531,23 +530,26 @@ public class ProfNetwork {
 
 public static void sendMessage(ProfNetwork esql, String current_usr){
 	try{
-		System.out.print("\tEnter in the userId of who to send a message too: ");
+		System.out.print("\tEnter recipient userid: ");
 		String receiver_id = in.readLine();
 		
-		String query = String.format("SELECT msgId FROM MESSAGE ORDER BY msgId DESC LIMIT 1");
-		System.out.println("This is the last messageId: ");
-		esql.executeQueryAndPrintResult(query);
+		String query2 = String.format("SELECT max(msgId) FROM MESSAGE");
+		List<List<String>> result= esql.executeQueryAndReturnResult(query2);
+				
+		// Newmsgid is 1+Last Message ID
+		int newmsgid=1+Integer.parseInt(result.get(0).get(0));		
 		
-		System.out.print("\tEnter in this value +1 for a valid messageId: ");
-		String message_id = in.readLine();
-		System.out.print("\tEnter the contents of the message you would like to send. Hit enter when done: ");
+		System.out.print("\tPlease type in the contents of the message and press ENTER: ");
 		String contents = in.readLine();
+
+		// For Timestamp
 		java.util.Date date = new java.util.Date();
 		Timestamp myTimestamp = new Timestamp(date.getTime());
-		String S = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(myTimestamp);
-		System.out.println(S);
-		String query3 = String.format("INSERT INTO MESSAGE (msgId, senderId, receiverId, contents, sendTime, deleteStatus, status) VALUES ('%s', '%s', '%s', '%s', '%s', '0', 'Sent')", message_id, current_usr, receiver_id, contents, S);
-		esql.executeUpdate(query3);
+		String timest = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(myTimestamp);
+
+		// Actual query
+		String query = String.format("INSERT INTO MESSAGE (msgId, senderId, receiverId, contents, sendTime, deleteStatus, status) VALUES ('%s', '%s', '%s', '%s', '%s', '0', 'Sent')", newmsgid, current_usr, receiver_id, contents, timest);
+		esql.executeUpdate(query);
 		System.out.println("Message Sent!");
 		}catch(Exception e){
 			System.err.println(e.getMessage());

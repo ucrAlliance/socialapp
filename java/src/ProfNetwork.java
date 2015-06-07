@@ -282,8 +282,8 @@ public class ProfNetwork {
               while(usermenu) {
                 System.out.println("DASHBOARD");
                 System.out.println("---------");
-                System.out.println("1. View Friend List");//FIXME Not done
-                System.out.println("2. Update Profile");//FIXME Not done(might use indexes)
+                System.out.println("1. View Friend List");
+                System.out.println("2. Update Profile");
                 System.out.println("3. Write a new message");//FIXME DONE
                 System.out.println("4. Send Friend Request");//FIXME Not done
                 System.out.println("5. View/Delete messages");//FIXME DONE
@@ -294,7 +294,7 @@ public class ProfNetwork {
                 //FIXME Also we need to make our own print function their executeAndPrintResult() function has terrible output layout
                 switch (readChoice()){
                    case 1: FriendList(esql, authorisedUser); break;
-                   //case 2: UpdateProfile(esql, authorisedUser); break;
+                   case 2: UpdateProfile(esql, authorisedUser); break;
                    case 3: sendMessage(esql, authorisedUser); break;
                    //case 4: SendRequest(esql); break;
                    case 5: ViewMessages(esql, authorisedUser); break;
@@ -388,6 +388,41 @@ public class ProfNetwork {
       }
    }//end
 
+	public static void UpdateProfile(ProfNetwork esql, String current_user){
+      try{
+			System.out.println("\tUPDATE PROFILE");
+         System.out.println("\t------------------");
+			System.out.print("\tPlease provide the new information\n");
+         System.out.print("\tlogin: ");
+         String login = in.readLine();
+         System.out.print("\tpassword: ");
+         String password = in.readLine();
+         System.out.print("\temail: ");
+         String email = in.readLine();
+			System.out.print("\tName (Optional): ");
+         String name = in.readLine();
+			System.out.print("\tDate of Birth (Optional): ");
+         String dob = in.readLine();
+			
+	 		// Make Query
+			String query;
+			if(name.length()==0 && dob.length()!=0) {
+	 			query = String.format("UPDATE USR SET userid='%s', password='%s', email='%s', dateofbirth='%s' WHERE userid='%s'", login, password, email, dob, current_user);
+			} else if(name.length()!=0 && dob.length()==0) {
+	 			query = String.format("UPDATE USR SET userid='%s', password='%s', email='%s', name='%s' WHERE userid='%s'", login, password, email, name, current_user);
+			} else if(name.length()==0 && dob.length()==0) {
+	 			query = String.format("UPDATE USR SET userid='%s', password='%s', email='%s' WHERE userid='%s'", login, password, email, current_user);
+			} else {
+	 			query = String.format("UPDATE USR SET userid='%s', password='%s', email='%s', name='%s', dateofbirth='%s' WHERE userid='%s'", login, password, email, name, dob, current_user);
+			}
+
+         esql.executeUpdate(query);
+         System.out.println ("Profile successfully updated!");
+      }catch(Exception e){
+         System.err.println (e.getMessage ());
+      }
+   }//end
+
    /*
     * Check log in credentials for an existing user
     * @return User login or null is the user does not exist
@@ -439,9 +474,6 @@ public class ProfNetwork {
 	public static void FriendList(ProfNetwork esql, String current_usr){
 		try {
 			PrintFriendList(esql, current_usr);
-			// String query2 = String.format("SELECT connectionId FROM CONNECTION_USR WHERE (userId = '%s') AND status = 'Accept' UNION SELECT userId FROM CONNECTION_USR WHERE (connectionId = '%s') AND status = 'Accept'", current_usr, current_usr);
-			// esql.executeQueryAndPrintResult(query2);
-			// System.out.println("Friends table created!");
 		
 			boolean optionsMenu = true;
 			while(optionsMenu) {

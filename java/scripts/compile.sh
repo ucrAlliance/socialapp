@@ -5,6 +5,8 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home
 export PATH=$JAVA_HOME/bin:$PATH
 
 # compile the java program
+rm -rf ../classes
+mkdir ../classes
 javac -d $DIR/../classes $DIR/../src/ProfNetwork.java
 
 #run the java program

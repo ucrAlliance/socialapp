@@ -1,14 +1,21 @@
 /*
- * Template JAVA User Interface
- * =============================
- *
- * Database Management Systems
- * Department of Computer Science &amp; Engineering
- * University of California - Riverside
- *
- * Target DBMS: 'Postgres'
- *
- */
+  Database Management Systems
+  Department of Computer Science and Engineering
+  University of California - Riverside
+  Target DBMS: 'Postgres'
+ 
+	Group Members:
+		
+		Name: Ikk Anmol Singh Hundal
+		SID: 861134450
+
+		//FIXME
+		Name: Austin Macciola
+		SID:
+
+		We certify that this project is our own work, and except for the template
+		no help was received from anyone.
+*/
 
 
 import java.sql.DriverManager;
@@ -276,8 +283,9 @@ public class ProfNetwork {
                 System.out.println("4. Send Friend Request");//FIXME Not done
                 System.out.println("5. View/Delete messages");//FIXME DONE
                 System.out.println("6. Change password");//FIXME DONE
-                System.out.println("7. Search people");//FIXXME DONE(might need to limit what the user is able to see based on if friend or not, currently does not do this)
+                System.out.println("7. Search people");//FIXME DONE(might need to limit what the user is able to see based on if friend or not, currently does not do this)
                 System.out.println("8. Log out");
+
                 //FIXME Also we need to make our own print function their executeAndPrintResult() function has terrible output layout
                 switch (readChoice()){
                    case 1: FriendList(esql, authorisedUser); break;
@@ -342,15 +350,29 @@ public class ProfNetwork {
     **/
    public static void CreateUser(ProfNetwork esql){
       try{
-         System.out.print("\tEnter user login: ");
+			System.out.print("\tPlease provide the following information\n");
+         System.out.print("\tlogin: ");
          String login = in.readLine();
-         System.out.print("\tEnter user password: ");
+         System.out.print("\tpassword: ");
          String password = in.readLine();
-         System.out.print("\tEnter user email: ");
+         System.out.print("\temail: ");
          String email = in.readLine();
-
-	 //Creating empty contact\block lists for a user
-	 String query = String.format("INSERT INTO USR (userId, password, email) VALUES ('%s','%s','%s')", login, password, email);
+			System.out.print("\tName (Optional): ");
+         String name = in.readLine();
+			System.out.print("\tDate of Birth (Optional): ");
+         String dob = in.readLine();
+			
+	 		// Make Query
+			String query;
+			if(name.length()==0 && dob.length()!=0) {
+	 			query = String.format("INSERT INTO USR (userid, password, email, dateofbirth) VALUES ('%s','%s','%s','%s')", login, password, email, dob);
+			} else if(name.length()!=0 && dob.length()==0) {
+				query = String.format("INSERT INTO USR (userid, password, email, name) VALUES ('%s','%s','%s','%s')", login, password, email, name);
+			} else if(name.length()==0 && dob.length()==0) {
+				query = String.format("INSERT INTO USR (userid, password, email) VALUES ('%s','%s','%s')", login, password, email);
+			} else {
+	 			query = String.format("INSERT INTO USR (userid, password, email, name, dateofbirth) VALUES ('%s','%s','%s','%s','%s')", login, password, email, name, dob);
+			}
 
          esql.executeUpdate(query);
          System.out.println ("User successfully created!");
@@ -534,7 +556,6 @@ public static void ViewMessages(ProfNetwork esql, String current_usr){
 		}
 		//FIXME NEED THINK OF A WAY TO FIND OUT WHEN WE ARE ABLE TO SET THE DELETESTATUS EQUAL TO 3 SO IT CAN BE REMOVED FROM DATABASE
 	try{
-		String query
 		String query = String.format("DELETE FROM MESSAGE WHERE deleteStatus = 3");
 		int num = esql.executeQuery(query);
 		if(num > 0)

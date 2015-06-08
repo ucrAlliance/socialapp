@@ -283,14 +283,15 @@ public class ProfNetwork {
               while(usermenu) {
                 System.out.println("\nDASHBOARD");
                 System.out.println("---------");
-                System.out.println("1. View Friend List");
-                System.out.println("2. Update Profile");//FIXME
-                System.out.println("3. Write a new message");
-                System.out.println("4. Send Friend Request");//FIXME
-                System.out.println("5. View/Delete messages");
-                System.out.println("6. Change password");
-                System.out.println("7. Search people");//FIXME
-                System.out.println("8. Log out");
+                System.out.println("1. View My Profile");
+                System.out.println("2. View Friend List");
+                System.out.println("3. Update Profile");//FIXME
+                System.out.println("4. Write a new message");
+                System.out.println("5. Send Friend Request");//FIXME
+                System.out.println("6. View/Delete messages");
+                System.out.println("7. Change password");
+                System.out.println("8. Search people");//FIXME
+                System.out.println("9. Log out");
 
                 switch (readChoice()){
                    case 1: 
@@ -340,9 +341,9 @@ public class ProfNetwork {
 
    public static void Greeting(){
       System.out.println(
-         "\n\n*******************************************************\n" +
+         "\n*******************************************************\n" +
          "              Welcome to RLinkedin      	               \n" +
-         "*******************************************************\n");
+         "*******************************************************");
    }//end Greeting
 
    /*
@@ -552,8 +553,7 @@ public class ProfNetwork {
 
 			for(List<String> list : result){
 				for(String attr : list){
-					friends.add(attr);	
-					//System.out.println("\t"+ attr);	
+					friends.add(attr.trim());	
 				}
 			}
 			return friends;
@@ -592,9 +592,16 @@ public class ProfNetwork {
             System.out.println("1. View Profile");//FIXME DONE(shitty user interface)
             System.out.println("2. Go Back");
             switch (readChoice()){
-					/*case 1: 
-						ViewProfile(esql, current_usr);
-						break;*/
+					case 1: 
+						System.out.print("Enter the name of the person whose profile you want to see: ");
+         			String friendname = in.readLine();
+						if(!friends.contains(friendname))
+						{
+							System.out.print("That username does not exist in this friendlist");
+							break;
+						}
+						ViewProfile(esql, current_usr, friendname, clevel);
+						break;
                case 2: 
 						optionsMenu = false; 
 						break;

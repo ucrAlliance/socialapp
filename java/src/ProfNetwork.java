@@ -722,86 +722,73 @@ public class ProfNetwork {
 		try{
 			// Recieved Messages
 			System.out.println("\nRECEIVED MESSAGES");
-			String queryr = String.format("SELECT msgId, contents, deleteStatus, sendtime FROM MESSAGE WHERE receiverId = '%s' AND deleteStatus !=2", current_usr);
+			String queryr = String.format("SELECT msgId, contents, sendtime FROM MESSAGE WHERE receiverId = '%s' AND deleteStatus !=2", current_usr);
 			List<List<String>> received= esql.executeQueryAndReturnResult(queryr);
 
+			Set<String> inmessages = new TreeSet<String>();		
+	
 			// Print Here
 			for(List<String> list : received){
-				System.out.println("\n\tmsgid: " + list.get(0));
-				System.out.println("\tcontents: " + list.get(1).trim());
-				System.out.println("\tdeleteStatus: " + list.get(2));
-				System.out.println("\ttime: " + list.get(3));
+				String msgid=list.get(0).trim();
+				String contents=list.get(1).trim();
+				String time=list.get(2).trim();
+				
+				// Add to set
+				inmessages.add(msgid);
+				
+				System.out.println("\n\tmsgid: " + msgid);
+				System.out.println("\tcontents: " + contents);
+				System.out.println("\ttime: " + time);
 			}
 
 			// Sent Messages
 			System.out.println("\nSENT MESSAGES");
-			String querys = String.format("SELECT msgId, contents, deleteStatus, sendtime FROM MESSAGE WHERE senderId = '%s' AND deleteStatus != 1", current_usr);
+			String querys = String.format("SELECT msgId, contents, sendtime FROM MESSAGE WHERE senderId = '%s' AND deleteStatus != 1", current_usr);
 			List<List<String>> sent= esql.executeQueryAndReturnResult(querys);
+
+			Set<String> outmessages = new TreeSet<String>();		
 
 			// Print Here
 			for(List<String> list : sent){
-				System.out.println("\n\tmsgid: " + list.get(0));
-				System.out.println("\tcontents: " + list.get(1).trim());
-				System.out.println("\tdeleteStatus: " + list.get(2));
-				System.out.println("\ttime: " + list.get(3));
+				String msgid=list.get(0).trim();
+				String contents=list.get(1).trim();
+				String time=list.get(2).trim();
+				
+				// Add to set
+				outmessages.add(msgid);
+				
+				System.out.println("\n\tmsgid: " + msgid);
+				System.out.println("\tcontents: " + contents);
+				System.out.println("\ttime: " + time);
 			}
-
-		}catch(Exception e){
-			System.err.println(e.getMessage());
-		}
-		try{
-			String delete_message = "";
-			int num = 0;
-			do{
-				System.out.print("\tWould you like to delete any messages? y/n: ");
-				delete_message = in.readLine();
-				if(delete_message.equals("y"))
-				{
-					System.out.print("\tEnter messageId of message you would like to delete: ");
-					String message_id = in.readLine();
-					String query = String.format("Select msgId FROM MESSAGES_RECEIVED WHERE msgId = '%s'", message_id);
-					num = esql.executeQuery(query);
-					if(num > 0)
-					{
-						System.out.println("message id found in MESSAGES_RECEIVED");
-						String query2 = String.format("UPDATE MESSAGE SET deleteStatus = 2 WHERE receiverId = '%s'", current_usr);
-						esql.executeUpdate(query2);
-						System.out.println("Message removed from inbox!");
-					}
-					String query3 = String.format("Select msgId FROM MESSAGES_SENT WHERE msgId = '%s'", message_id);
-					num = esql.executeQuery(query3);
-					if(num > 0)
-					{
-						System.out.println("message id found in MESSAGES_SENT");
-						String query4 = String.format("UPDATE MESSAGE SET deleteStatus = 1 WHERE senderId = '%s'", current_usr);
-						esql.executeUpdate(query4);
-						System.out.println("Message removed from outbox!");
-					}
+			
+			boolean messagesMenu = true;
+			while(messagesMenu) {
+				System.out.println("\nMessage Menu");
+				System.out.println("1. Delete a Message");
+				System.out.println("9. Go back");
+				switch (readChoice()){
+					case 1: 
+						System.out.print("Enter the msgid of the message you want to delete: ");
+						String msgid=in.readLine(); 
+						if(inmessages.contains(msgid)){
+							//Delete inmessage
+						}else if (outmessages.contains(msgid)){
+							//Delete outmessage
+						}else{
+							System.out.println("The message for the msgid you provided does not exist. Please try again");
+						}
+						break;
+					case 9: 
+						messagesMenu = false; 
+						break;
+					default : 
+						System.out.println("Unrecognized choice!"); 
+						break;
 				}
-				else if(delete_message.equals("n"))
-				{
-					System.out.println("No messages deleted from inbox/outbox");
-				}
-				else
-				{
-					System.out.println("Incorrect input!");
-				}
-			}while(!delete_message.equals("y") && !delete_message.equals("n"));
-		}catch(Exception e){
-			System.err.println(e.getMessage());
-		}
-
-		//FIXME NEED THINK OF A WAY TO FIND OUT WHEN WE ARE ABLE TO SET THE DELETESTATUS EQUAL TO 3 SO IT CAN BE REMOVED FROM DATABASE
-		try{
-			String query = String.format("DELETE FROM MESSAGE WHERE deleteStatus = 3");
-			int num = esql.executeQuery(query);
-			if(num > 0)
-			{
-				System.out.print(num);
-				System.out.print(" Messages were deleted from the datatable.");
 			}
 		}catch(Exception e){
-			System.out.println("Message remains in database because sender/receiver still holds onto it");
+			System.err.println(e.getMessage());
 		}
 	}//end
 

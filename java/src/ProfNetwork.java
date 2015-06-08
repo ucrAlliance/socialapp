@@ -82,6 +82,17 @@ public class ProfNetwork {
 		}//end catch
 	}//end ProfNetwork
 
+	public void execute(String sql) throws SQLException {
+		// creates a statement object
+		Statement stmt = this._connection.createStatement ();
+
+		// issues the update instruction
+		stmt.execute (sql);
+
+		// close the instruction
+		stmt.close ();
+	}//end executeUpdate
+
 	/**
 	 * Method to execute an update SQL statement.  Update SQL instructions
 	 * includes CREATE, INSERT, UPDATE, DELETE, and DROP.
@@ -730,7 +741,7 @@ public class ProfNetwork {
 				}else{
 					updatequery = String.format("delete from message WHERE msgid='%s'", msgid);
 				}
-				esql.executeQueryAndReturnResult(updatequery);
+				esql.execute(updatequery);
 				System.out.println("Message deleted from outbox");
 			}
 			else if(target==2){
@@ -743,7 +754,7 @@ public class ProfNetwork {
 				}else{
 					updatequery = String.format("delete from message WHERE msgid='%s'", msgid);
 				}
-				esql.executeQueryAndReturnResult(updatequery);
+				esql.execute(updatequery);
 				System.out.println("Message deleted from inbox");
 			}
 		}catch(Exception e){

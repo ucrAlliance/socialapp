@@ -499,17 +499,43 @@ public class ProfNetwork {
 		}
 	}
 
-	public static void SendConnectionTo(ProfNetwork esql, String current_usr, String receiver_id){
+	public static void SendConnectionTo(ProfNetwork esql, String current_usr, String receiver_id, int clevel){
 		try{
-			//Pre Checking FIXME
-			String query3 = String.format("SELECT * FROM connection_usr WHERE userid = '%s' and connectionid = '%s' OR userid = '%s' and connectionid = '%s'", current_usr, receiver_id, receiver_id, current_usr);
-			int num = esql.executeQuery(query3);
-			if(num>0){
-				System.out.println("A connection already exists. Please accept connection request, or wait for the connection to accept it.");
+			if(clevel>3)
+			{
+				// PreChecking
+				String pc = String.format("SELECT * FROM connection_usr WHERE userid = '%s'", current_usr, receiver_id);
+				int numpc = esql.executeQuery(pc);
+				if(numpc>5)
+					System.out.println("This person is more than 3 levels apart form you. And you have already used your 5 free connections. Try sending a request to someone within 3 connections");
 				return;
 			}
 
-			// Actual query
+			// Checking			
+			// Case1 - If you are already friends with that person
+			Set<String> friends=FriendSet(esql,current_usr);
+			if(friends.contains(receiver_id.trim())){
+				System.out.println("You are already friends with that person");
+				return;
+			}			
+
+			// Case2 - If you have already sent request to that person
+			String case2 = String.format("SELECT * FROM connection_usr WHERE userid = '%s' and connectionid = '%s'", current_usr, receiver_id);
+			int numc2 = esql.executeQuery(case2);
+			if(numc2>0){
+				System.out.println("You have already sent a connection request to that person.");
+				return;
+			}
+			
+			// Case3 - The other person has sent a connection request to you	
+			String case3 = String.format("SELECT * FROM connection_usr WHERE userid = '%s' and connectionid = '%s'", receiver_id, current_usr);
+			int numc3 = esql.executeQuery(case3);
+			if(numc3>0){
+				System.out.println("The other person has sent a connection request to you. Accept that connection.");
+				return;
+			}
+
+			// If you made it this far, you're good. Go send a connection request.
 			String query = String.format("INSERT INTO connection_usr (userid, connectionid, status) VALUES ('%s', '%s', 'Request')", current_usr, receiver_id);
 			esql.executeUpdate(query);
 			System.out.println("Connection Requested!");
@@ -544,9 +570,7 @@ public class ProfNetwork {
 
 	public static void ViewProfile(ProfNetwork esql, String current_usr, String profile_id, int clevel){
 		try{
-			//FIXME
-			//Print Profile Here
-			//PrintFriendList(esql, current_usr);
+			PrintProfile(esql, current_usr, clevel);
 
 			boolean optionsMenu = true;
 			while(optionsMenu) {
@@ -559,7 +583,7 @@ public class ProfNetwork {
 						SendMessageTo(esql, current_usr, profile_id); 
 						break;
 					case 2: 
-						SendConnectionTo(esql, current_usr, profile_id); 
+						SendConnectionTo(esql, current_usr, profile_id, clevel); 
 						break;
 					case 3: 
 						FriendList(esql, current_usr, profile_id, clevel+1); 
@@ -622,7 +646,7 @@ public class ProfNetwork {
 			while(optionsMenu) {
 				System.out.println("\nFRIENDS LIST MENU");
 				System.out.println("---------");
-				System.out.println("1. View Profile");//FIXME DONE(shitty user interface)
+				System.out.println("1. View Profile");
 				System.out.println("9. Go Back");
 				switch (readChoice()){
 					case 1: 
@@ -655,7 +679,6 @@ public class ProfNetwork {
 			System.err.println(e.getMessage());
 		}
 	}//end
-
 
 	public static void sendMessage(ProfNetwork esql, String current_usr){
 		try{

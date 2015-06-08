@@ -624,8 +624,8 @@ public class ProfNetwork {
 					String iname=edul.get(0).trim();
 					String major=edul.get(1).trim();
 					String degree=edul.get(2).trim();
-					String sdate=edul.get(3).trim();
-					String edate=edul.get(4).trim();
+					String sdate=edul.get(3);
+					String edate=edul.get(4);
 					System.out.println("\nE: " + degree + " in " + major + " from " + iname);
 					System.out.println("from " + sdate + " to " + edate);
 				}
@@ -641,7 +641,7 @@ public class ProfNetwork {
 					String company=workxp.get(0).trim();
 					String role=workxp.get(1).trim();
 					String sdate=workxp.get(2).trim();
-					String edate=workxp.get(3).trim();
+					String edate=workxp.get(3);
 					System.out.println("\nW: " + role + " at " + company);
 					System.out.println("from " + sdate + " to " + edate);
 				}

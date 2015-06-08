@@ -303,7 +303,7 @@ public class ProfNetwork {
 						PrintProfile(esql,authorisedUser,0);	
 						System.out.println("\n1. View Connection Requests");
 						System.out.println("2. View Friend List");
-						System.out.println("3. Update Profile");//FIXME
+						System.out.println("3. Update Profile");
 						System.out.println("4. Write a new message");
 						System.out.println("5. View/Delete messages");
 						System.out.println("6. Change password");
@@ -420,35 +420,81 @@ public class ProfNetwork {
 		}
 	}//end
 
+	public static void UpdateProfileHelper(ProfNetwork esql, String current_usr, int callnum){
+		try{
+			if(callnum==0){
+				System.out.println("\n\tEducation detail");
+				System.out.print("\tInstitute Name: ");
+				String iname = in.readLine();
+				System.out.print("\tMajor: ");
+				String major = in.readLine();
+				System.out.print("\tDegree: ");
+				String degree = in.readLine();
+				System.out.print("\tStart Date (Optional): ");
+				String sdate = in.readLine();
+				System.out.print("\tEnd Date (Optional): ");
+				String edate = in.readLine();
+
+				// Make query
+				String query;
+				if(sdate.trim().length()==0){
+					query = String.format("INSERT INTO educational_details (userid, instituitionname, major, degree) VALUES ('%s', '%s', '%s', '%s')", current_usr, iname, major, degree);
+				}else if (edate.trim().length()==0){
+					query = String.format("INSERT INTO educational_details (userid, instituitionname, major, degree, startdate) VALUES ('%s', '%s', '%s', '%s', '%s')", current_usr, iname, major, degree, sdate);
+				}else{
+					query = String.format("INSERT INTO educational_details (userid, instituitionname, major, degree, startdate, enddate) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')", current_usr, iname, major, degree, sdate, edate);
+				}
+				esql.executeUpdate(query);
+			} else if(callnum==1){
+				System.out.println("\n\tWork Experience");
+				System.out.print("\tCompany: ");
+				String company = in.readLine();
+				System.out.print("\tRole: ");
+				String role = in.readLine();
+				System.out.print("\tLocation (Optional): ");
+				String location = in.readLine();
+				System.out.print("\tStart Date (Mandatory): ");
+				String sdate = in.readLine();
+				System.out.print("\tEnd Date (Optional): ");
+				String edate = in.readLine();
+				String query;
+				if(edate.trim().length()==0){
+					query = String.format("INSERT INTO work_expr (userid, company, role, location, startdate) VALUES ('%s', '%s', '%s', '%s', '%s')", current_usr, company, role, location, sdate);
+				} else {
+					query = String.format("INSERT INTO work_expr (userid, company, role, location, startdate, enddate) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')", current_usr, company, role, location, sdate, edate);
+				}
+				esql.executeUpdate(query);
+			}
+			System.out.println("Updated Sucessfully");
+		}catch(Exception e){
+			System.err.println (e.getMessage ());
+		}
+	}//end
+
 	public static void UpdateProfile(ProfNetwork esql, String current_user){
 		try{
-			System.out.println("\n\tUPDATE PROFILE");
-			System.out.print("\tPlease provide the new information\n");
-			System.out.print("\tlogin: ");
-			String login = in.readLine();
-			System.out.print("\tpassword: ");
-			String password = in.readLine();
-			System.out.print("\temail: ");
-			String email = in.readLine();
-			System.out.print("\tName (Optional): ");
-			String name = in.readLine();
-			System.out.print("\tDate of Birth (Optional): ");
-			String dob = in.readLine();
-
-			// Make Query
-			String query;
-			if(name.length()==0 && dob.length()!=0) {
-				query = String.format("UPDATE USR SET userid='%s', password='%s', email='%s', dateofbirth='%s' WHERE userid='%s'", login, password, email, dob, current_user);
-			} else if(name.length()!=0 && dob.length()==0) {
-				query = String.format("UPDATE USR SET userid='%s', password='%s', email='%s', name='%s' WHERE userid='%s'", login, password, email, name, current_user);
-			} else if(name.length()==0 && dob.length()==0) {
-				query = String.format("UPDATE USR SET userid='%s', password='%s', email='%s' WHERE userid='%s'", login, password, email, current_user);
-			} else {
-				query = String.format("UPDATE USR SET userid='%s', password='%s', email='%s', name='%s', dateofbirth='%s' WHERE userid='%s'", login, password, email, name, dob, current_user);
+			boolean updateMenu = true;
+			while(updateMenu) {
+				String searchkey;
+				System.out.println("\nUPDATE MENU");
+				System.out.println("1. Add Educational detail");
+				System.out.println("2. Add Work Experience");
+				System.out.println("9. Go back");
+				switch (readChoice()){
+					case 1: 
+						UpdateProfileHelper(esql,current_user, 0);
+						break;
+					case 2: 
+						UpdateProfileHelper(esql,current_user, 1);
+						break;
+					case 9: 
+						updateMenu = false; 
+						break;
+					default : 
+						System.out.println("Unrecognized choice!"); 
+						break;
+				}
 			}
-
-			esql.executeUpdate(query);
-			System.out.println ("Profile successfully updated!");
 		}catch(Exception e){
 			System.err.println (e.getMessage ());
 		}

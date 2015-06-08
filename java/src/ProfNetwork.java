@@ -718,6 +718,39 @@ public class ProfNetwork {
 		}
 	}//end
 
+	public static void deleteMessage(ProfNetwork esql, String msgid, int target){
+		try{	
+			if (target==1){
+				String msgquery = String.format("SELECT deletestatus FROM MESSAGE WHERE msgid='%s'", msgid);
+				List<List<String>> msgstatus = esql.executeQueryAndReturnResult(msgquery);
+				int deletestatus=Integer.parseInt(msgstatus.get(0).get(0).trim());
+				String updatequery;
+				if(deletestatus==0){
+					updatequery = String.format("update message set deletestatus=1 WHERE msgid='%s'", msgid);
+				}else{
+					updatequery = String.format("delete from message WHERE msgid='%s'", msgid);
+				}
+				esql.executeQueryAndReturnResult(updatequery);
+				System.out.println("Message deleted from outbox");
+			}
+			else if(target==2){
+				String msgquery = String.format("SELECT deletestatus FROM MESSAGE WHERE msgid='%s'", msgid);
+				List<List<String>> msgstatus = esql.executeQueryAndReturnResult(msgquery);
+				int deletestatus=Integer.parseInt(msgstatus.get(0).get(0).trim());
+				String updatequery;
+				if(deletestatus==0){
+					updatequery = String.format("update message set deletestatus=2 WHERE msgid='%s'", msgid);
+				}else{
+					updatequery = String.format("delete from message WHERE msgid='%s'", msgid);
+				}
+				esql.executeQueryAndReturnResult(updatequery);
+				System.out.println("Message deleted from inbox");
+			}
+		}catch(Exception e){
+			System.err.println(e.getMessage());
+		}
+	}//end
+
 	public static void ViewMessages(ProfNetwork esql, String current_usr){
 		try{
 			// Recieved Messages
@@ -772,9 +805,9 @@ public class ProfNetwork {
 						System.out.print("Enter the msgid of the message you want to delete: ");
 						String msgid=in.readLine(); 
 						if(inmessages.contains(msgid)){
-							//Delete inmessage
+							deleteMessage(esql, msgid, 2);
 						}else if (outmessages.contains(msgid)){
-							//Delete outmessage
+							deleteMessage(esql, msgid, 1);
 						}else{
 							System.out.println("The message for the msgid you provided does not exist. Please try again");
 						}

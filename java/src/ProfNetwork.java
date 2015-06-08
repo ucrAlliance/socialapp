@@ -551,19 +551,57 @@ public class ProfNetwork {
 			String query_basic = String.format("SELECT name,email,dateofbirth FROM usr where userid='%s'", usr);
 			List<List<String>> basic= esql.executeQueryAndReturnResult(query_basic);
 			
-			//Print Basic
+			// Print Basic
 			List<String> info=basic.get(0);
 			String name=info.get(0).trim();
 			String email=info.get(1).trim();
 			String dob=info.get(2).trim();
+			System.out.println("userid: " + usr);
 			if(name.length()!=0){
 				System.out.println("Name: "+name);
 			}
 			System.out.println("Email: "+email);
-			if(dob.length()!=0){
+			if(dob.length()!=0 && clevel<=1){
 				System.out.println("Date of Birth: "+dob);
 			}
+
+			// Print Educational Details
+			String query_edu = String.format("SELECT instituitionname, major, degree, startdate, enddate FROM educational_details where userid='%s'", usr);
+			List<List<String>> edu = esql.executeQueryAndReturnResult(query_edu);
+			if(edu.size()==0){	
+				System.out.println("\nNo Educational Details on record\n");
+			}else{	
+				System.out.println("\nEDUCATION\n");
+				for(List<String> edul : edu){	
+					String iname=edul.get(0).trim();
+					String major=edul.get(1).trim();
+					String degree=edul.get(2).trim();
+					String sdate=edul.get(3).trim();
+					String edate=edul.get(4).trim();
+					System.out.println("Institution: "+ iname);
+					System.out.println(degree + " in " + major);
+					System.out.println("from " + sdate + " to " + edate +"\n");
+				}
+			}
+
+			// Print Work Details
+			String query_work = String.format("SELECT company, role, startdate, enddate FROM work_expr where userid='%s'", usr);
+			List<List<String>> work = esql.executeQueryAndReturnResult(query_work);
+			if(edu.size()==0){	
+				System.out.println("\nNo Work Experience on record\n");
+			}else{	
+				System.out.println("\nWORK\n");
+				for(List<String> workxp : work){	
+					String company=workxp.get(0).trim();
+					String role=workxp.get(1).trim();
+					String sdate=workxp.get(2).trim();
+					String edate=workxp.get(3).trim();
+					System.out.println(role + " at " + company);
+					System.out.println("from " + sdate + " to " + edate +"\n");
+				}
+			}
 			System.out.println("--------------------");
+
 		}catch(Exception e){
 			System.err.println (e.getMessage ());
 		}
@@ -806,6 +844,7 @@ public class ProfNetwork {
 		}
 	}//end
 
+/*
 	public static void print_search_results(ProfNetwork esql, Set<String> searchresults){
 		try{
 			if(searchresults.size()==0)
@@ -825,7 +864,7 @@ public class ProfNetwork {
 			System.err.println (e.getMessage ());
 		}
 	}//end	
-
+*/
 	public static void search_helper(ProfNetwork esql, String searchkey, int attr){
 		try{
 			String searchquery;
@@ -833,16 +872,16 @@ public class ProfNetwork {
 				searchquery = String.format("select userid from usr where userid='%s'", searchkey);
 			} else if (attr==2) {
 				searchquery = String.format("select userid from usr where email='%s'", searchkey);
-			} else if (attr==3) {
+			} else {
 				searchquery = String.format("select userid from usr where name='%s'", searchkey);
 			}
 	
 			List<List<String>> searchresults= esql.executeQueryAndReturnResult(searchquery);
 			Set<String> searchset = new TreeSet<String>();
-			for(List<String> list : seachresult){
+			for(List<String> list : searchresults){
 				searchset.add(list.get(0).trim());	
 			}
-			print_search_results(esql, searchset);
+			//print_search_results(esql, searchset);
 		}catch(Exception e){
 			System.err.println (e.getMessage ());
 		}
@@ -856,7 +895,7 @@ public class ProfNetwork {
 				System.out.println("2. Search by email");
 				System.out.println("3. Search by Name");
 				System.out.println("9. Go back");
-				switch (readChoice()){
+				/*switch (readChoice()){
 					case 1: 
 						SendMessageTo(esql, current_usr, profile_id); 
 						break;
@@ -872,7 +911,7 @@ public class ProfNetwork {
 					default : 
 						System.out.println("Unrecognized choice!"); 
 						break;
-				}
+				}*/
 			}
 
 

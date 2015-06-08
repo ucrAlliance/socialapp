@@ -294,10 +294,9 @@ public class ProfNetwork {
 						System.out.println("2. View Friend List");
 						System.out.println("3. Update Profile");//FIXME
 						System.out.println("4. Write a new message");
-						System.out.println("5. Send Friend Request");//FIXME
-						System.out.println("6. View/Delete messages");
-						System.out.println("7. Change password");
-						System.out.println("8. Search people");//FIXME
+						System.out.println("5. View/Delete messages");
+						System.out.println("6. Change password");
+						System.out.println("7. Search people");
 						System.out.println("9. Log out");
 
 						switch (readChoice()){
@@ -311,15 +310,12 @@ public class ProfNetwork {
 								sendMessage(esql, authorisedUser); 
 								break;
 							case 5: 
-								//SendRequest(esql); 
-								break;
-							case 6: 
 								ViewMessages(esql, authorisedUser); 
 								break;
-							case 7: 
+							case 6: 
 								ChangePassword(esql, authorisedUser); 
 								break;
-							case 8: 
+							case 7: 
 								Search(esql, authorisedUser); 
 								break;
 							case 9: 
@@ -540,7 +536,7 @@ public class ProfNetwork {
 			System.err.println (e.getMessage ());
 		}
 	}
-		
+
 	public static void PrintProfile(ProfNetwork esql, String usr, int clevel){
 		try{
 			System.out.println("--------------------");
@@ -606,7 +602,7 @@ public class ProfNetwork {
 
 			boolean optionsMenu = true;
 			while(optionsMenu) {
-				System.out.println("1. Send Message");
+				System.out.println("\n1. Send Message");
 				System.out.println("2. Send Request");
 				System.out.println("3. View Friend List");
 				System.out.println("9. Go back");
@@ -832,6 +828,51 @@ public class ProfNetwork {
 		}
 	}//end
 
+	public static int getConnectionLevel(ProfNetwork esql, String usr, String prospect){
+		try{	
+			
+			// Level 0
+			Set<String> friends = FriendSet(esql, usr);
+			if(friends.contains(prospect)){
+				return 0;
+			}
+
+			// Level 1
+			Set<String> friends1 = new TreeSet<String>();
+			for(String cur_id : friends){
+				friends1.addAll(FriendSet(esql, cur_id));
+			}
+			if(friends1.contains(prospect)){
+				return 1;
+			}
+
+			// Level 2
+			Set<String> friends2 = new TreeSet<String>();
+			for(String cur_id : friends1){
+				friends2.addAll(FriendSet(esql, cur_id));
+			}
+			if(friends2.contains(prospect)){
+				return 2;
+			}
+
+			// Level 3
+			Set<String> friends3 = new TreeSet<String>();
+			for(String cur_id : friends2){
+				friends3.addAll(FriendSet(esql, cur_id));
+			}
+			if(friends3.contains(prospect)){
+				return 3;
+			}
+
+			// If you make it here, then you are level 4.
+			return 4;
+
+		}catch(Exception e){
+			System.err.println (e.getMessage ());
+			return -1;
+		}
+	}//end
+
 	public static void search_helper(ProfNetwork esql, String cur_usr, String searchkey, int attr){
 		try{
 			String searchquery;
@@ -851,12 +892,42 @@ public class ProfNetwork {
 			}
 
 			Set<String> friends = FriendSet(esql, cur_usr);
+			Set<String> searchset = new TreeSet<String>();
 			for(List<String> searchlist : searchresults){
 				String cursearch=searchlist.get(0).trim();
-				if(friends.contains(cursearch)){
-					PrintProfile(esql, cursearch,1);
+				searchset.add(cursearch);
+			}
+				
+			for(String cur_id : searchset){
+				if(friends.contains(cur_id)){
+					PrintProfile(esql, cur_id,1);
 				}else{
-					PrintProfile(esql, cursearch,2);
+					PrintProfile(esql, cur_id,2);
+				}
+			}
+
+			boolean searchResultMenu = true;
+			while(searchResultMenu) {
+				System.out.println("\nSEARCH RESULT MENU");
+				System.out.println("1. View Profile");
+				System.out.println("9. Go back");
+				switch (readChoice()){
+					case 1: 
+						System.out.print("Enter the userid of the person whose profile you want to see: ");
+						String profile_id=in.readLine(); 
+						if(!searchset.contains(profile_id)){
+							System.out.println("The userid you entered does not exist in the search results. Please try again");
+							break;
+						}
+						int clevel = getConnectionLevel(esql, cur_usr, profile_id);
+						ViewProfile(esql, cur_usr, profile_id, clevel);
+						break;
+					case 9: 
+						searchResultMenu = false; 
+						break;
+					default : 
+						System.out.println("Unrecognized choice!"); 
+						break;
 				}
 			}
 		}catch(Exception e){

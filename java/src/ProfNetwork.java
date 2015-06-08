@@ -523,7 +523,7 @@ public class ProfNetwork {
 	public static void AcceptConnection(ProfNetwork esql, String cur_usr, String reqsender){
 		try{
 			String accept = String.format("update connection_usr set status='Accept' where userid='%s' and connectionid='%s' and status='Request'", reqsender, cur_usr);
-			esql.executeQuery(accept);
+			esql.execute(accept);
 			System.out.println("Request Accepted Successfully");
 		}catch(Exception e){
 			System.err.println (e.getMessage ());
@@ -541,10 +541,12 @@ public class ProfNetwork {
 			}
 			
 			// Print 		
-			System.out.println("\tThese people want to connect with you");
+			System.out.println("\tREQUESTS");
+			System.out.println("\t---------");
 			for(String connec : conset){	
-				System.out.println("\tconnec");
+				System.out.println("\t"+connec);
 			}
+			System.out.println("\t---------");
 
 			boolean updateMenu = true;
 			while(updateMenu) {
@@ -554,7 +556,7 @@ public class ProfNetwork {
 				System.out.println("9. Go back");
 				switch (readChoice()){
 					case 1: 
-						System.out.println("\nEnter userid of the person whose connection you want to accept");
+						System.out.print("\nEnter userid of the person whose connection you want to accept: ");
 						String conid=in.readLine();
 						if(!conset.contains(conid)){
 							System.out.println("You have no connection request from the userid you entered");
@@ -629,13 +631,14 @@ public class ProfNetwork {
 			if(clevel>3)
 			{
 				// PreChecking
-				String pc = String.format("SELECT * FROM connection_usr WHERE userid = '%s'", current_usr, receiver_id);
+				String pc = String.format("SELECT * FROM connection_usr WHERE userid = '%s'", current_usr);
 				int numpc = esql.executeQuery(pc);
-				if(numpc>5)
+				if(numpc>5){
 					System.out.println("This person is more than 3 levels apart form you. And you have already used your 5 free connections. Try sending a request to someone within 3 connections");
-				return;
+					return;
+				}
 			}
-
+			
 			// Checking			
 			// Case1 - If you are already friends with that person
 			Set<String> friends=FriendSet(esql,current_usr);

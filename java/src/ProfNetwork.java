@@ -273,49 +273,53 @@ public class ProfNetwork {
 				System.out.println("9. < EXIT");
 				String authorisedUser = null;
 				switch (readChoice()){
-					case 1: CreateUser(esql); break;
-					case 2: authorisedUser = LogIn(esql); break;
-					case 9: keepon = false; break;
-					default : System.out.println("Unrecognized choice!"); break;
+					case 1: 
+						CreateUser(esql); 
+						break;
+					case 2: 
+						authorisedUser = LogIn(esql); 
+						break;
+					case 9: 
+						keepon = false; 
+						break;
+					default : 
+						System.out.println("Unrecognized choice!"); 
+						break;
 				}//end switch
+				
 				if (authorisedUser != null) {
 					boolean usermenu = true;
 					while(usermenu) {
-						System.out.println("\nDASHBOARD");
-						System.out.println("---------");
-						System.out.println("1. View My Profile");
-						System.out.println("2. View Friend List");
-						System.out.println("3. Update Profile");//FIXME
-						System.out.println("4. Write a new message");
-						System.out.println("5. Send Friend Request");//FIXME
-						System.out.println("6. View/Delete messages");
-						System.out.println("7. Change password");
-						System.out.println("8. Search people");//FIXME
+						PrintProfile(esql,authorisedUser,0);	
+						System.out.println("\n1. View Friend List");
+						System.out.println("2. Update Profile");//FIXME
+						System.out.println("3. Write a new message");
+						System.out.println("4. Send Friend Request");//FIXME
+						System.out.println("5. View/Delete messages");
+						System.out.println("6. Change password");
+						System.out.println("7. Search people");//FIXME
 						System.out.println("9. Log out");
 
 						switch (readChoice()){
 							case 1: 
-								//myFriendList(esql, authorisedUser); 
-								break;
-							case 2: 
 								myFriendList(esql, authorisedUser); 
 								break;
-							case 3: 
+							case 2: 
 								UpdateProfile(esql, authorisedUser); 
 								break;
-							case 4: 
+							case 3: 
 								sendMessage(esql, authorisedUser); 
 								break;
-							case 5: 
-								SendRequest(esql); 
+							case 4: 
+								//SendRequest(esql); 
 								break;
-							case 6: 
+							case 5: 
 								ViewMessages(esql, authorisedUser); 
 								break;
-							case 7: 
+							case 6: 
 								ChangePassword(esql, authorisedUser); 
 								break;
-							case 8: 
+							case 7: 
 								Search(esql); 
 								break;
 							case 9: 
@@ -509,6 +513,30 @@ public class ProfNetwork {
 			String query = String.format("INSERT INTO connection_usr (userid, connectionid, status) VALUES ('%s', '%s', 'Request')", current_usr, receiver_id);
 			esql.executeUpdate(query);
 			System.out.println("Connection Requested!");
+		}catch(Exception e){
+			System.err.println (e.getMessage ());
+		}
+	}
+		
+	public static void PrintProfile(ProfNetwork esql, String usr, int clevel){
+		try{
+			System.out.println("--------------------");
+			String query_basic = String.format("SELECT name,email,dateofbirth FROM usr where userid='%s'", usr);
+			List<List<String>> basic= esql.executeQueryAndReturnResult(query_basic);
+			
+			//Print Basic
+			List<String> info=basic.get(0);
+			String name=info.get(0).trim();
+			String email=info.get(1).trim();
+			String dob=info.get(2).trim();
+			if(name.length()!=0){
+				System.out.println("Name: "+name);
+			}
+			System.out.println("Email: "+email);
+			if(dob.length()!=0){
+				System.out.println("Date of Birth: "+dob);
+			}
+			System.out.println("--------------------");
 		}catch(Exception e){
 			System.err.println (e.getMessage ());
 		}

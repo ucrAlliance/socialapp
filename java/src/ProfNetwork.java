@@ -598,7 +598,7 @@ public class ProfNetwork {
 
 	public static void ViewProfile(ProfNetwork esql, String current_usr, String profile_id, int clevel){
 		try{
-			PrintProfile(esql, current_usr, clevel);
+			PrintProfile(esql, profile_id, clevel);
 
 			boolean optionsMenu = true;
 			while(optionsMenu) {

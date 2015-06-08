@@ -311,6 +311,9 @@ public class ProfNetwork {
 						System.out.println("9. Log out");
 
 						switch (readChoice()){
+							case 1: 
+								ConnectionRequests(esql, authorisedUser);
+								break;
 							case 2: 
 								myFriendList(esql, authorisedUser); 
 								break;
@@ -486,6 +489,78 @@ public class ProfNetwork {
 						break;
 					case 2: 
 						UpdateProfileHelper(esql,current_user, 1);
+						break;
+					case 9: 
+						updateMenu = false; 
+						break;
+					default : 
+						System.out.println("Unrecognized choice!"); 
+						break;
+				}
+			}
+		}catch(Exception e){
+			System.err.println (e.getMessage ());
+		}
+	}//end
+
+	public static Set<String> GetConnections(ProfNetwork esql, String usr){
+		try{
+			String connections = String.format("SELECT userid FROM connection_usr where connectionid='%s' and status='Request'", usr);
+			List<List<String>> conlist= esql.executeQueryAndReturnResult(connections);
+		
+			Set<String> conset = new TreeSet<String>();
+			for(List<String> conrows : conlist){	
+				conset.add(conrows.get(0).trim());
+			}
+
+			return conset;
+		}catch(Exception e){
+			System.err.println (e.getMessage ());
+			return null;
+		}
+	}
+
+	public static void AcceptConnection(ProfNetwork esql, String cur_usr, String reqsender){
+		try{
+			String accept = String.format("update connection_usr set status='Accept' where userid='%s' and connectionid='%s' and status='Request'", reqsender, cur_usr);
+			esql.executeQuery(accept);
+			System.out.println("Request Accepted Successfully");
+		}catch(Exception e){
+			System.err.println (e.getMessage ());
+		}
+	}
+
+	public static void ConnectionRequests(ProfNetwork esql, String current_user){
+		try{
+			// Get Connections
+			Set<String> conset=GetConnections(esql, current_user);
+			
+			if(conset.size()==0){
+				System.out.println("\nYou have no incoming connection request. Try again later");
+				return;
+			}
+			
+			// Print 		
+			System.out.println("\tThese people want to connect with you");
+			for(String connec : conset){	
+				System.out.println("\tconnec");
+			}
+
+			boolean updateMenu = true;
+			while(updateMenu) {
+				String searchkey;
+				System.out.println("\nCONNECTION MENU");
+				System.out.println("1. Accept Connection Request");
+				System.out.println("9. Go back");
+				switch (readChoice()){
+					case 1: 
+						System.out.println("\nEnter userid of the person whose connection you want to accept");
+						String conid=in.readLine();
+						if(!conset.contains(conid)){
+							System.out.println("You have no connection request from the userid you entered");
+							break;
+						}
+						AcceptConnection(esql,current_user,conid);
 						break;
 					case 9: 
 						updateMenu = false; 

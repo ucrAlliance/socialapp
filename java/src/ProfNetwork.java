@@ -291,35 +291,36 @@ public class ProfNetwork {
 					boolean usermenu = true;
 					while(usermenu) {
 						PrintProfile(esql,authorisedUser,0);	
-						System.out.println("\n1. View Friend List");
-						System.out.println("2. Update Profile");//FIXME
-						System.out.println("3. Write a new message");
-						System.out.println("4. Send Friend Request");//FIXME
-						System.out.println("5. View/Delete messages");
-						System.out.println("6. Change password");
-						System.out.println("7. Search people");//FIXME
+						System.out.println("\n1. View Connection Requests");
+						System.out.println("2. View Friend List");
+						System.out.println("3. Update Profile");//FIXME
+						System.out.println("4. Write a new message");
+						System.out.println("5. Send Friend Request");//FIXME
+						System.out.println("6. View/Delete messages");
+						System.out.println("7. Change password");
+						System.out.println("8. Search people");//FIXME
 						System.out.println("9. Log out");
 
 						switch (readChoice()){
-							case 1: 
+							case 2: 
 								myFriendList(esql, authorisedUser); 
 								break;
-							case 2: 
+							case 3: 
 								UpdateProfile(esql, authorisedUser); 
 								break;
-							case 3: 
+							case 4: 
 								sendMessage(esql, authorisedUser); 
 								break;
-							case 4: 
+							case 5: 
 								//SendRequest(esql); 
 								break;
-							case 5: 
+							case 6: 
 								ViewMessages(esql, authorisedUser); 
 								break;
-							case 6: 
+							case 7: 
 								ChangePassword(esql, authorisedUser); 
 								break;
-							case 7: 
+							case 8: 
 								Search(esql); 
 								break;
 							case 9: 
@@ -805,8 +806,76 @@ public class ProfNetwork {
 		}
 	}//end
 
+	public static void print_search_results(ProfNetwork esql, Set<String> searchresults){
+		try{
+			if(searchresults.size()==0)
+			{
+				System.out.println("No result found");
+				return;
+			}	
+			for(String : seachresults){
+				searchset.add(list.get(0).trim());	
+			}
+	String query = String.format("SELECT U.email, E.instituitionName, E.major, E.degree, W.company, W.role FROM USR U, EDUCATIONAL_DETAILS E, WORK_EXPR W WHERE  U.name = '%s' AND U.userId = W.userId AND U.userId = E.userId", usr_name);
+			esql.executeQueryAndPrintResult(query);
+
+
+
+		}catch(Exception e){
+			System.err.println (e.getMessage ());
+		}
+	}//end	
+
+	public static void search_helper(ProfNetwork esql, String searchkey, int attr){
+		try{
+			String searchquery;
+			if(attr==1){
+				searchquery = String.format("select userid from usr where userid='%s'", searchkey);
+			} else if (attr==2) {
+				searchquery = String.format("select userid from usr where email='%s'", searchkey);
+			} else if (attr==3) {
+				searchquery = String.format("select userid from usr where name='%s'", searchkey);
+			}
+	
+			List<List<String>> searchresults= esql.executeQueryAndReturnResult(searchquery);
+			Set<String> searchset = new TreeSet<String>();
+			for(List<String> list : seachresult){
+				searchset.add(list.get(0).trim());	
+			}
+			print_search_results(esql, searchset);
+		}catch(Exception e){
+			System.err.println (e.getMessage ());
+		}
+	}//end
+
 	public static void Search(ProfNetwork esql){
 		try{
+			boolean searchMenu = true;
+			while(searchMenu) {
+				System.out.println("1. Search by userid");
+				System.out.println("2. Search by email");
+				System.out.println("3. Search by Name");
+				System.out.println("9. Go back");
+				switch (readChoice()){
+					case 1: 
+						SendMessageTo(esql, current_usr, profile_id); 
+						break;
+					case 2: 
+						SendConnectionTo(esql, current_usr, profile_id, clevel); 
+						break;
+					case 3: 
+						FriendList(esql, current_usr, profile_id, clevel+1); 
+						break;
+					case 9: 
+						searchMenu = false; 
+						break;
+					default : 
+						System.out.println("Unrecognized choice!"); 
+						break;
+				}
+			}
+
+
 			System.out.print("\tEnter name to search: ");
 			String usr_name = in.readLine();
 

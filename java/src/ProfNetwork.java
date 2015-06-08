@@ -293,11 +293,14 @@ public class ProfNetwork {
                 System.out.println("8. Search people");//FIXME
                 System.out.println("9. Log out");
 
-                switch (readChoice()){
-                   case 1: 
+					switch (readChoice()){
+						case 1: 
 							myFriendList(esql, authorisedUser); 
 							break;
-                   case 2: 
+                  case 1: 
+							myFriendList(esql, authorisedUser); 
+							break;
+                  case 2: 
 							UpdateProfile(esql, authorisedUser); 
 							break;
                    case 3: 
@@ -316,13 +319,13 @@ public class ProfNetwork {
                    case 8: 
 							usermenu = false; 
 							break;
-                   default : 
+                  default : 
 							System.out.println("Unrecognized choice!"); 
 							break;
-                }
-              }
+                	}
+              	}
             }
-         }//end while
+      	}//end while
       }catch(Exception e) {
          System.err.println (e.getMessage ());
       }finally{

@@ -632,6 +632,12 @@ public class ProfNetwork {
 
 	public static void SendConnectionTo(ProfNetwork esql, String current_usr, String receiver_id, int clevel){
 		try{
+			// Dummy Case Check
+			if(current_usr.equals(receiver_id)){
+				System.out.println("\nYou Cannot send request to yourself");
+				return;
+			}
+
 			if(clevel>3)
 			{
 				// PreChecking

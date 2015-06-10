@@ -680,15 +680,15 @@ public class ProfNetwork {
 			
 			// Print Basic
 			List<String> info=basic.get(0);
-			String name=info.get(0).trim();
-			String email=info.get(1).trim();
-			String dob=info.get(2).trim();
+			String name=info.get(0);
+			String email=info.get(1);
+			String dob=info.get(2);
 			System.out.println("userid: " + usr);
-			if(name.length()!=0){
+			if(name!=null){
 				System.out.println("Name: "+name);
 			}
 			System.out.println("Email: "+email);
-			if(dob.length()!=0 && clevel<=1){
+			if(dob!=null  && clevel<=1){
 				System.out.println("Date of Birth: "+dob);
 			}
 

@@ -654,7 +654,8 @@ public class ProfNetwork {
 				// PreChecking
 				String pc = String.format("SELECT * FROM connection_usr WHERE userid = '%s'", current_usr);
 				int numpc = esql.executeQuery(pc);
-				if(numpc>5){
+				Set<String> friends=FriendSet(esql,current_usr);
+				if(numpc + friends.size()>5){
 					System.out.println("This person is more than 3 levels apart form you. And you have already used your 5 free connections. Try sending a request to someone within 3 connections");
 					return;
 				}
@@ -755,6 +756,9 @@ public class ProfNetwork {
 	public static void ViewProfile(ProfNetwork esql, String current_usr, String profile_id, int clevel){
 		try{
 			PrintProfile(esql, profile_id, clevel);
+			if(clevel>=0){
+				System.out.println("Connection Level: " + clevel);
+			}
 
 			boolean optionsMenu = true;
 			while(optionsMenu) {

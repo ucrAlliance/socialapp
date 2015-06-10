@@ -300,14 +300,14 @@ public class ProfNetwork {
 				if (authorisedUser != null) {
 					boolean usermenu = true;
 					while(usermenu) {
-						PrintProfile(esql,authorisedUser,0);	
 						System.out.println("\n1. View Connection Requests");
 						System.out.println("2. View Friend List");
-						System.out.println("3. Update Profile");
-						System.out.println("4. Write a new message");
-						System.out.println("5. View/Delete messages");
-						System.out.println("6. Change password");
-						System.out.println("7. Search people");
+						System.out.println("3. View Profile");
+						System.out.println("4. Update Profile");
+						System.out.println("5. Write a new message");
+						System.out.println("6. View/Delete messages");
+						System.out.println("7. Change password");
+						System.out.println("8. Search people");
 						System.out.println("9. Log out");
 
 						switch (readChoice()){
@@ -318,18 +318,21 @@ public class ProfNetwork {
 								myFriendList(esql, authorisedUser); 
 								break;
 							case 3: 
-								UpdateProfile(esql, authorisedUser); 
+								ViewProfile(esql, authorisedUser, authorisedUser, -1);
 								break;
 							case 4: 
-								sendMessage(esql, authorisedUser); 
+								UpdateProfile(esql, authorisedUser); 
 								break;
 							case 5: 
-								ViewMessages(esql, authorisedUser); 
+								sendMessage(esql, authorisedUser); 
 								break;
 							case 6: 
-								ChangePassword(esql, authorisedUser); 
+								ViewMessages(esql, authorisedUser); 
 								break;
 							case 7: 
+								ChangePassword(esql, authorisedUser); 
+								break;
+							case 8: 
 								Search(esql, authorisedUser); 
 								break;
 							case 9: 

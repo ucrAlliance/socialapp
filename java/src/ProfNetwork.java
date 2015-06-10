@@ -629,22 +629,11 @@ public class ProfNetwork {
 
 	public static void SendMessageTo(ProfNetwork esql, String current_usr, String receiver_id){
 		try{
-			String query2 = String.format("SELECT max(msgId) FROM MESSAGE");
-			List<List<String>> result= esql.executeQueryAndReturnResult(query2);
-
-			// Newmsgid is 1+Last Message ID
-			int newmsgid=1+Integer.parseInt(result.get(0).get(0));		
-
 			System.out.print("\tPlease type in the contents of the message and press ENTER: ");
 			String contents = in.readLine();
 
-			// For Timestamp
-			java.util.Date date = new java.util.Date();
-			Timestamp myTimestamp = new Timestamp(date.getTime());
-			String timest = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(myTimestamp);
-
 			// Actual query
-			String query = String.format("INSERT INTO MESSAGE (msgId, senderId, receiverId, contents, sendTime, deleteStatus, status) VALUES ('%s', '%s', '%s', '%s', '%s', '0', 'Sent')", newmsgid, current_usr, receiver_id, contents, timest);
+			String query = String.format("INSERT INTO MESSAGE (senderId, receiverId, contents, deleteStatus, status) VALUES ('%s', '%s', '%s', '0', 'Delivered')", current_usr, receiver_id, contents);
 			esql.executeUpdate(query);
 			System.out.println("Message Sent!");
 		}catch(Exception e){

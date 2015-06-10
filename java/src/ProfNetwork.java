@@ -441,11 +441,11 @@ public class ProfNetwork {
 				// Make query
 				String query;
 				if(sdate.trim().length()==0){
-					query = String.format("INSERT INTO educational_details (userid, instituitionname, major, degree) VALUES ('%s', '%s', '%s', '%s')", current_usr, iname, major, degree);
+					query = String.format("INSERT INTO EDUCATIONAL_DETAILS (userid, instituitionname, major, degree) VALUES ('%s', '%s', '%s', '%s')", current_usr, iname, major, degree);
 				}else if (edate.trim().length()==0){
-					query = String.format("INSERT INTO educational_details (userid, instituitionname, major, degree, startdate) VALUES ('%s', '%s', '%s', '%s', '%s')", current_usr, iname, major, degree, sdate);
+					query = String.format("INSERT INTO EDUCATIONAL_DETAILS (userid, instituitionname, major, degree, startdate) VALUES ('%s', '%s', '%s', '%s', '%s')", current_usr, iname, major, degree, sdate);
 				}else{
-					query = String.format("INSERT INTO educational_details (userid, instituitionname, major, degree, startdate, enddate) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')", current_usr, iname, major, degree, sdate, edate);
+					query = String.format("INSERT INTO EDUCATIONAL_DETAILS (userid, instituitionname, major, degree, startdate, enddate) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')", current_usr, iname, major, degree, sdate, edate);
 				}
 				esql.executeUpdate(query);
 			} else if(callnum==1){
@@ -462,9 +462,9 @@ public class ProfNetwork {
 				String edate = in.readLine();
 				String query;
 				if(edate.trim().length()==0){
-					query = String.format("INSERT INTO work_expr (userid, company, role, location, startdate) VALUES ('%s', '%s', '%s', '%s', '%s')", current_usr, company, role, location, sdate);
+					query = String.format("INSERT INTO WORK_EXPR (userid, company, role, location, startdate) VALUES ('%s', '%s', '%s', '%s', '%s')", current_usr, company, role, location, sdate);
 				} else {
-					query = String.format("INSERT INTO work_expr (userid, company, role, location, startdate, enddate) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')", current_usr, company, role, location, sdate, edate);
+					query = String.format("INSERT INTO WORK_EXPR (userid, company, role, location, startdate, enddate) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')", current_usr, company, role, location, sdate, edate);
 				}
 				esql.executeUpdate(query);
 			}
@@ -529,6 +529,18 @@ public class ProfNetwork {
 			System.err.println (e.getMessage ());
 		}
 	}
+	
+	public static void RejectConnection(ProfNetwork esql, String cur_usr, String reqsender){
+		try{
+			String reject = String.format("update connection_usr set status='Reject' where userid='%s' and connectionid='%s' and status='Request'", reqsender, cur_usr);
+			esql.execute(reject);
+			System.out.println("Request Rejected Successfully");
+		}catch(Exception e){
+			System.err.println (e.getMessage ());
+		}
+	}
+	
+	
 
 	public static void ConnectionRequests(ProfNetwork esql, String current_user){
 		try{
@@ -553,6 +565,7 @@ public class ProfNetwork {
 				String searchkey;
 				System.out.println("\nCONNECTION MENU");
 				System.out.println("1. Accept Connection Request");
+				System.out.println("2. Reject Connection Request");
 				System.out.println("9. Go back");
 				switch (readChoice()){
 					case 1: 
@@ -563,6 +576,15 @@ public class ProfNetwork {
 							break;
 						}
 						AcceptConnection(esql,current_user,conid);
+						break;
+					case 2:
+						System.out.print("\nEnter userid of the person whose connection you want to reject: ");
+						String conid2=in.readLine();
+						if(!conset.contains(conid2)){
+							System.out.println("You have no connection request from the userid you entered");
+							break;
+						}
+						RejectConnection(esql,current_user,conid2);
 						break;
 					case 9: 
 						updateMenu = false; 

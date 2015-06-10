@@ -1,3 +1,10 @@
+--drops
+drop index usrindex;
+drop index msgindex;
+drop index wrkindex;
+drop index eduindex;
+
+
 --I have used hash index everywhere because we are mostly concerned with equality queries.
 
 --Hash index on User

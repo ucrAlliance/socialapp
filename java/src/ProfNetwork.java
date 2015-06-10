@@ -348,9 +348,10 @@ public class ProfNetwork {
 			// make sure to cleanup the created table and close the connection.
 			try{
 				if(esql != null) {
-					System.out.print("Disconnecting from database...");
+					//Debugging
+					//System.out.print("Disconnecting from database...");
 					esql.cleanup ();
-					System.out.println("Done\n\nBye !");
+					System.out.println("\nHave a nice day!");
 				}//end if
 			}catch (Exception e) {
 				// ignored.
@@ -1059,10 +1060,8 @@ public class ProfNetwork {
 				System.out.println("\nUserid: " + cur_id);
 				if(friends.contains(cur_id)){
 					System.out.println("Status: Friends");
-					//PrintProfile(esql, cur_id,1);
 				}else{
 					System.out.println("Status: Not Friends");
-					//PrintProfile(esql, cur_id,2);
 				}
 			}
 

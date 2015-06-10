@@ -1053,11 +1053,16 @@ public class ProfNetwork {
 				searchset.add(cursearch);
 			}
 				
+			System.out.println("\nSearch Results");
+	
 			for(String cur_id : searchset){
+				System.out.println("\nUserid: " + cur_id);
 				if(friends.contains(cur_id)){
-					PrintProfile(esql, cur_id,1);
+					System.out.println("Status: Friends");
+					//PrintProfile(esql, cur_id,1);
 				}else{
-					PrintProfile(esql, cur_id,2);
+					System.out.println("Status: Not Friends");
+					//PrintProfile(esql, cur_id,2);
 				}
 			}
 

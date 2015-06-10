@@ -300,14 +300,14 @@ public class ProfNetwork {
 				if (authorisedUser != null) {
 					boolean usermenu = true;
 					while(usermenu) {
-						PrintProfile(esql,authorisedUser,0);	
 						System.out.println("\n1. View Connection Requests");
 						System.out.println("2. View Friend List");
-						System.out.println("3. Update Profile");
-						System.out.println("4. Write a new message");
-						System.out.println("5. View/Delete messages");
-						System.out.println("6. Change password");
-						System.out.println("7. Search people");
+						System.out.println("3. View Profile");
+						System.out.println("4. Update Profile");
+						System.out.println("5. Write a new message");
+						System.out.println("6. View/Delete messages");
+						System.out.println("7. Change password");
+						System.out.println("8. Search people");
 						System.out.println("9. Log out");
 
 						switch (readChoice()){
@@ -318,18 +318,21 @@ public class ProfNetwork {
 								myFriendList(esql, authorisedUser); 
 								break;
 							case 3: 
-								UpdateProfile(esql, authorisedUser); 
+								ViewProfile(esql, authorisedUser, authorisedUser, -1);
 								break;
 							case 4: 
-								sendMessage(esql, authorisedUser); 
+								UpdateProfile(esql, authorisedUser); 
 								break;
 							case 5: 
-								ViewMessages(esql, authorisedUser); 
+								sendMessage(esql, authorisedUser); 
 								break;
 							case 6: 
-								ChangePassword(esql, authorisedUser); 
+								ViewMessages(esql, authorisedUser); 
 								break;
 							case 7: 
+								ChangePassword(esql, authorisedUser); 
+								break;
+							case 8: 
 								Search(esql, authorisedUser); 
 								break;
 							case 9: 
@@ -348,9 +351,10 @@ public class ProfNetwork {
 			// make sure to cleanup the created table and close the connection.
 			try{
 				if(esql != null) {
-					System.out.print("Disconnecting from database...");
+					//Debugging
+					//System.out.print("Disconnecting from database...");
 					esql.cleanup ();
-					System.out.println("Done\n\nBye !");
+					System.out.println("\nHave a nice day!");
 				}//end if
 			}catch (Exception e) {
 				// ignored.
@@ -650,6 +654,12 @@ public class ProfNetwork {
 
 	public static void SendConnectionTo(ProfNetwork esql, String current_usr, String receiver_id, int clevel){
 		try{
+			// Dummy Case Check
+			if(current_usr.equals(receiver_id)){
+				System.out.println("\nYou Cannot send request to yourself");
+				return;
+			}
+
 			if(clevel>3)
 			{
 				// PreChecking
@@ -702,15 +712,15 @@ public class ProfNetwork {
 			
 			// Print Basic
 			List<String> info=basic.get(0);
-			String name=info.get(0).trim();
-			String email=info.get(1).trim();
-			String dob=info.get(2).trim();
+			String name=info.get(0);
+			String email=info.get(1);
+			String dob=info.get(2);
 			System.out.println("userid: " + usr);
-			if(name.length()!=0){
+			if(name!=null){
 				System.out.println("Name: "+name);
 			}
 			System.out.println("Email: "+email);
-			if(dob.length()!=0 && clevel<=1){
+			if(dob!=null  && clevel<=1){
 				System.out.println("Date of Birth: "+dob);
 			}
 
@@ -1075,11 +1085,14 @@ public class ProfNetwork {
 				searchset.add(cursearch);
 			}
 				
+			System.out.println("\nSearch Results");
+	
 			for(String cur_id : searchset){
+				System.out.println("\nUserid: " + cur_id);
 				if(friends.contains(cur_id)){
-					PrintProfile(esql, cur_id,1);
+					System.out.println("Status: Friends");
 				}else{
-					PrintProfile(esql, cur_id,2);
+					System.out.println("Status: Not Friends");
 				}
 			}
 
